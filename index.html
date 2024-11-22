@@ -41,7 +41,7 @@
             margin: 10px 0 20px;
             font-size: 1em;
             animation: fadeIn 1.5s ease-in-out;
-        }}
+        }
         .container {
             padding: 20px;
         }
@@ -125,9 +125,34 @@
             element.classList.toggle("dark-mode");
         }
 
+        function notifyUser(title, body) {
+            if (Notification.permission === "granted") {
+                new Notification(title, { body: body });
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.body.classList.add("dark-mode");
+            }
+
+            const h3Element = document.querySelector('.container h3');
+            const pElement = h3Element.nextElementSibling;
+
+            if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        notifyUser(h3Element.textContent, pElement.textContent);
+                        setInterval(() => {
+                            notifyUser(h3Element.textContent, pElement.textContent);
+                        }, 86400000);
+                    }
+                });
+            } else if (Notification.permission === "granted") {
+                notifyUser(h3Element.textContent, pElement.textContent);
+                setInterval(() => {
+                    notifyUser(h3Element.textContent, pElement.textContent);
+                }, 86400000);
             }
         });
     </script>
